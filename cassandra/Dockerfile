@@ -1,10 +1,10 @@
-# Spotify Cassandra 2.0 Single Node Image
+# Cassandra single node
 #
 # VERSION               0.1
 #
 # Starts a Cassandra instance constituting a one node cluster. 
 
-FROM spotify/cassandra:base
+FROM yrobla/cassandra:base
 
 USER root
 
