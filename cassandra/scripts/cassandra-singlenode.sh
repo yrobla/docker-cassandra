@@ -14,10 +14,17 @@ sed -i -e "s/^rpc_address.*/rpc_address: 0.0.0.0/" $CASSANDRA_CONFIG/cassandra.y
 sed -i -e "s/- seeds: \"127.0.0.1\"/- seeds: \"$SEEDS\"/" $CASSANDRA_CONFIG/cassandra.yaml
 
 # Listen on IP:port of the container
-sed -i -e "s/^listen_address.*/listen_address: $IP/" $CASSANDRA_CONFIG/cassandra.yaml
+sed -i -e "s/^listen_address.*/listen_address: $HOST/" $CASSANDRA_CONFIG/cassandra.yaml
 
 # Broadcast on IP:port of the container
 sed -i -e "s/^# broadcast_address.*/broadcast_address: $HOST/" $CASSANDRA_CONFIG/cassandra.yaml
+
+# ports
+sed -i -e "s/^storage_port.*/storage_port: $PORT1/" $CASSANDRA_CONFIG/cassandra.yaml
+sed -i -e "s/^ssl_storage_port.*/ssl_storage_port: $PORT2/" $CASSANDRA_CONFIG/cassandra.yaml
+sed -i -e "s/^rpc_port.*/rpc_port: $PORT3/" $CASSANDRA_CONFIG/cassandra.yaml
+sed -i -e "s/^native_transport_port.*/native_transport_port: $PORT4/" $CASSANDRA_CONFIG/cassandra.yaml
+
 
 # With virtual nodes disabled, we need to manually specify the token
 echo "JVM_OPTS=\"\$JVM_OPTS -Dcassandra.initial_token=0\"" >> $CASSANDRA_CONFIG/cassandra-env.sh
@@ -27,5 +34,6 @@ echo "JVM_OPTS=\"\$JVM_OPTS -Dcassandra.skip_wait_for_gossip_to_settle=0\"" >> $
 
 # Most likely not needed
 echo "JVM_OPTS=\"\$JVM_OPTS -Djava.rmi.server.hostname=$HOST\"" >> $CASSANDRA_CONFIG/cassandra-env.sh
+
 
 cassandra -f

@@ -20,10 +20,15 @@ sed -i -e "s/^listen_address.*/listen_address: $IP/" $CASSANDRA_CONFIG/cassandra
 # Configure Cassandra seeds
 if [ -z "$CASSANDRA_SEEDS" ]; then
 	echo "No seeds specified, being my own seed..."
-        if [ $# == 1 ]; then SEEDS="$1"; 
+        if [ $# == 1 ]; then
+            SEEDS="$1"
+        else
+            SEEDS="$HOST"
+        fi
 	CASSANDRA_SEEDS=$SEEDS
 fi
-sed -i -e "s/- seeds: \"127.0.0.1\"/- seeds: \"$CASSANDRA_SEEDS,$HOST\"/" $CASSANDRA_CONFIG/cassandra.yaml
+sed -i -e "s/- seeds: \"127.0.0.1\"/- seeds: \"$CASSANDRA_SEEDS\"/" $CASSANDRA_CONFIG/cassandra.yaml
+
 
 # With virtual nodes disabled, we need to manually specify the token
 if [ -z "$CASSANDRA_TOKEN" ]; then
