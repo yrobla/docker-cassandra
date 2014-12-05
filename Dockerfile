@@ -34,4 +34,8 @@ RUN rm -f /etc/security/limits.d/cassandra.conf
 
 EXPOSE 7199 7000 7001 9160 9042 22 8012 61621
 
-CMD [""]
+USER root
+ADD scripts/cassandra-clusternode.sh /usr/local/bin/cassandra-clusternode
+
+# Start Cassandra
+ENTRYPOINT ["cassandra-clusternode"]
