@@ -9,6 +9,31 @@ FROM dockerfile/java:oracle-java7
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# make sure the package repository is up to date and update ubuntu
+RUN \
+sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
+apt-get update && \
+apt-get -y upgrade && \
+locale-gen en_US.UTF-8
+
+# install supervisor
+RUN apt-get install -y curl git htop man software-properties-common unzip vim wget
+
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV HOME /root
+
+# supervisor installation &&
+# create directory for child images to store configuration in
+RUN apt-get -y install supervisor && \
+mkdir -p /var/log/supervisor && \
+mkdir -p /etc/supervisor/conf.d
+
+# supervisor base configuration
+ADD supervisor.conf /etc/supervisor.conf
+ADD cassandra.conf /etc/supervisor.conf.d/
+
 # Add DataStax sources
 ADD datastax_key /tmp/datastax_key
 RUN apt-key add /tmp/datastax_key
@@ -24,6 +49,9 @@ RUN apt-get update && \
 
 ENV CASSANDRA_CONFIG /etc/cassandra
 
+# Add yaml file
+ADD cassandra.yaml /etc/cassandra/conf/cassandra.yaml
+
 # Run base config script
 ADD scripts/config-cassandra-base.sh /usr/local/bin/config-cassandra-base
 RUN /usr/local/bin/config-cassandra-base
@@ -32,10 +60,10 @@ RUN /usr/local/bin/config-cassandra-base
 # See https://groups.google.com/forum/#!msg/docker-dev/8TM_jLGpRKU/dewIQhcs7oAJ
 RUN rm -f /etc/security/limits.d/cassandra.conf
 
-EXPOSE 7199 7000 7001 9160 9042 22 8012 61621
+EXPOSE 7199 9700 9701 9160 9042 8012 61621
 
 USER root
 ADD scripts/cassandra-clusternode.sh /usr/local/bin/cassandra-clusternode
 
 # Start Cassandra
-ENTRYPOINT ["cassandra-clusternode"]
+CMD supervisord -c /etc/supervisor.conf
