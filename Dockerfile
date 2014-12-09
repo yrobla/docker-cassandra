@@ -32,7 +32,7 @@ mkdir -p /etc/supervisor/conf.d
 
 # supervisor base configuration
 ADD supervisor.conf /etc/supervisor.conf
-ADD cassandra.conf /etc/supervisor.conf.d/
+ADD cassandra.conf /etc/supervisor/conf.d/
 
 # Add DataStax sources
 ADD datastax_key /tmp/datastax_key
@@ -47,10 +47,12 @@ RUN apt-get update && \
     apt-get install -y cassandra=2.0.10 dsc20=2.0.10-1 && \
     rm -rf /var/lib/apt/lists/*
 
-ENV CASSANDRA_CONFIG /etc/cassandra
-
 # Add yaml file
+RUN mkdir -p /var/log/cassandra
+RUN chmod a+w /var/log/cassandra
+ENV CASSANDRA_CONFIG /etc/cassandra
 ADD cassandra.yaml /etc/cassandra/conf/cassandra.yaml
+ADD log4j.properties /etc/cassandra/conf/log4j.properties
 
 # Run base config script
 ADD scripts/config-cassandra-base.sh /usr/local/bin/config-cassandra-base
@@ -64,6 +66,7 @@ EXPOSE 7199 9700 9701 9160 9042 8012 61621
 
 USER root
 ADD scripts/cassandra-clusternode.sh /usr/local/bin/cassandra-clusternode
+RUN /usr/local/bin/cassandra-clusternode
 
 # Start Cassandra
-CMD supervisord -c /etc/supervisor.conf
+CMD ["supervisord", "-c", "/etc/supervisor.conf"]
