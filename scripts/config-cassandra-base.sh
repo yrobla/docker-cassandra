@@ -4,8 +4,6 @@
 export CASSANDRA_TOKEN=${HOST//./}
 
 # replace template vars
-sed -i "s#HOST#$HOST#g" /etc/cassandra/conf/cassandra.yaml
-
-
-# enable ssl
-
+sed -i "s#CASSANDRA_HOST#$HOST#g" /etc/cassandra/cassandra.yaml
+sed -i "s#CASSANDRA_HOST#$HOST#g" /etc/opscenter/opscenterd.conf
+echo "stomp_interface: $HOST" | sudo tee -a /etc/datastax-agent/conf/address.yaml

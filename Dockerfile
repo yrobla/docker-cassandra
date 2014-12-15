@@ -17,7 +17,7 @@ apt-get -y upgrade && \
 locale-gen en_US.UTF-8
 
 # install supervisor
-RUN apt-get install -y curl git htop man software-properties-common unzip vim wget
+RUN apt-get install -y curl git htop man software-properties-common unzip vim wget psmisc
 
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
@@ -45,28 +45,34 @@ RUN ln -s -f /bin/true /usr/bin/chfn
 # Install Cassandra 2.0.10
 RUN apt-get update && \
     apt-get install -y cassandra=2.0.10 dsc20=2.0.10-1 && \
+    apt-get install -y opscenter-free && \
+    apt-get install -y datastax-agent && \
     rm -rf /var/lib/apt/lists/*
 
-# Add yaml file
+# Add config files file
 RUN mkdir -p /var/log/cassandra
 RUN chmod a+w /var/log/cassandra
 ENV CASSANDRA_CONFIG /etc/cassandra
-ADD cassandra.yaml /etc/cassandra/conf/cassandra.yaml
+ADD templates/cassandra.yaml /etc/cassandra/cassandra.yaml
 ADD log4j.properties /etc/cassandra/conf/log4j.properties
+ADD templates/opscenter.conf /etc/opscenter/opscenterd.conf
+
+# Install extra packages
+RUN wget http://snapshot.debian.org/archive/debian/20110406T213352Z/pool/main/o/openssl098/libssl0.9.8_0.9.8o-7_amd64.deb
+RUN  dpkg -i libssl0.9.8_0.9.8o-7_amd64.deb
 
 # Run base config script
 ADD scripts/config-cassandra-base.sh /usr/local/bin/config-cassandra-base
-RUN /usr/local/bin/config-cassandra-base
 
 # Necessary since cassandra is trying to override the system limitations
 # See https://groups.google.com/forum/#!msg/docker-dev/8TM_jLGpRKU/dewIQhcs7oAJ
 RUN rm -f /etc/security/limits.d/cassandra.conf
 
-EXPOSE 7199 9700 9701 9160 9042 8012 61621
+EXPOSE 7199 9700 9701 9160 9042 8012 61621 8082
 
 USER root
 ADD scripts/cassandra-clusternode.sh /usr/local/bin/cassandra-clusternode
-RUN /usr/local/bin/cassandra-clusternode
+ADD scripts/launch_cassandra.sh /usr/local/bin/
 
 # Start Cassandra
-CMD ["supervisord", "-c", "/etc/supervisor.conf"]
+CMD "/usr/local/bin/launch_cassandra.sh"
