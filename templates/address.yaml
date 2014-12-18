@@ -1,0 +1,7 @@
+stomp_interface: CASSANDRA_HOST
+stomp_port: 9702
+api_port: 9703
+use_ssl: 0
+local_interface: CASSANDRA_HOST
+agent_rpc_interface: 0.0.0.0
+agent_rpc_broadcast_address: 127.0.0.1

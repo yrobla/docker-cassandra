@@ -4,6 +4,14 @@
 export CASSANDRA_TOKEN=${HOST//./}
 
 # replace template vars
-sed -i "s#CASSANDRA_HOST#$HOST#g" /etc/cassandra/cassandra.yaml
+sed -i "s#CASSANDRA_HOST#$HOST#g" /etc/cassandra/conf/cassandra.yaml
+sed -i "s#PRIVATE_IP#$PRIVATE_IP#g" /etc/cassandra/conf/cassandra.yaml
+sed -i "s#PUBLIC_IP#$PUBLIC_IP#g" /etc/cassandra/conf/cassandra.yaml
 sed -i "s#CASSANDRA_HOST#$HOST#g" /etc/opscenter/opscenterd.conf
-echo "stomp_interface: $HOST" | sudo tee -a /etc/datastax-agent/conf/address.yaml
+sed -i "s#PRIVATE_IP#$PRIVATE_IP#g" /etc/opscenter/opscenterd.conf
+sed -i "s#CASSANDRA_HOST#$HOST#g" /etc/datastax-agent/address.yaml
+sed -i "s#PRIVATE_IP#$PRIVATE_IP#g" /etc/datastax-agent/address.yaml
+sed -i "s#PUBLIC_IP#$PUBLIC_IP#g" /etc/datastax-agent/address.yaml
+sed -i "s#CASSANDRA_HOST#$HOST#g" /etc/opscenter/clusters/Revisely.conf
+sed -i "s#PRIVATE_IP#$PRIVATE_IP#g" /etc/opscenter/clusters/Revisely.conf
+sed -i "s#PUBLIC_IP#$PUBLIC_IP#g" /etc/opscenter/clusters/Revisely.conf

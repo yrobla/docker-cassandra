@@ -320,7 +320,7 @@ ssl_storage_port: 9701
 # address associated with the hostname (it might not be).
 #
 # Setting this to 0.0.0.0 is always wrong.
-listen_address: 127.0.0.1
+listen_address:
 # Address to broadcast to other Cassandra nodes
 # Leaving this blank will set it to the same value as listen_address
 broadcast_address: CASSANDRA_HOST
@@ -360,7 +360,7 @@ rpc_port: 9160
 # rpc_address. If rpc_address is set to 0.0.0.0, broadcast_rpc_address must
 # be set.
 # broadcast_rpc_address: 1.2.3.4
-#broadcast_rpc_address: CASSANDRA_HOST
+broadcast_rpc_address: CASSANDRA_HOST
 # enable or disable keepalive on rpc/native connections
 rpc_keepalive: true
 # Cassandra provides two out-of-the-box options for the RPC Server:
@@ -675,3 +675,4 @@ internode_compression: all
 # reducing overhead from the TCP protocol itself, at the cost of increasing
 # latency if you block for cross-datacenter responses.
 inter_dc_tcp_nodelay: false
+auto_bootstrap: false
